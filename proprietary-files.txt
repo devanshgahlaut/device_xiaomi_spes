@@ -156,6 +156,16 @@ vendor/lib64/hw/vendor.qti.hardware.bluetooth_sar@1.1-impl.so
 vendor/lib64/vendor.qti.hardware.bluetooth_sar@1.0.so
 vendor/lib64/vendor.qti.hardware.bluetooth_sar@1.1.so
 
+# Bluetooth (LDAC & LHDC)
+system/system/lib/libldacBT_abr.so
+system/system/lib/libldacBT_enc.so
+system/system/lib/liblhdcBT_enc.so
+system/system/lib/liblhdc.so
+system/system/lib64/libldacBT_abr.so
+system/system/lib64/libldacBT_enc.so
+system/system/lib64/liblhdcBT_enc.so
+system/system/lib64/liblhdc.so
+
 # Camera
 vendor/bin/f2player
 vendor/lib64/camera/com.qti.eeprom.irs2381c_polar.so
