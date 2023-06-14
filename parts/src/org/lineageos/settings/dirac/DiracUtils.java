@@ -27,13 +27,14 @@ import android.media.session.MediaController;
 import android.media.session.MediaSessionManager;
 import android.media.session.PlaybackState;
 import java.util.List;
+
 public class DiracUtils {
 
     private static DiracUtils mInstance;
-    private DiracSound mDiracSound;
-    private MediaSessionManager mMediaSessionManager;
-    private Handler mHandler = new Handler();
-    private Context mContext;
+    private static DiracSound mDiracSound;
+    private static MediaSessionManager mMediaSessionManager;
+    private static Handler mHandler = new Handler();
+    private static Context mContext;
 
     public DiracUtils(Context context) {
         mContext = context;
@@ -44,8 +45,6 @@ public class DiracUtils {
     public static synchronized DiracUtils getInstance(Context context) {
         if (mInstance == null) {
             mInstance = new DiracUtils(context);
-											   
-								
         }
 
         return mInstance;
@@ -116,11 +115,11 @@ public class DiracUtils {
         }
     }
 
-    public boolean isDiracEnabled() {
+    protected static boolean isDiracEnabled() {
         return mDiracSound != null && mDiracSound.getMusic() == 1;
     }
 
-    public void setLevel(String preset) {
+    protected static void setLevel(String preset) {
         String[] level = preset.split("\\s*,\\s*");
 
         for (int band = 0; band <= level.length - 1; band++) {
@@ -128,22 +127,22 @@ public class DiracUtils {
         }
     }
 
-    public void setHeadsetType(int paramInt) {
+    protected static void setHeadsetType(int paramInt) {
         mDiracSound.setHeadsetType(paramInt);
     }
 
-    public boolean getHifiMode() {
+    protected static boolean getHifiMode() {
         AudioManager audioManager = mContext.getSystemService(AudioManager.class);
         return audioManager.getParameters("hifi_mode").contains("true");
     }
 
-    public void setHifiMode(int paramInt) {
+    protected static void setHifiMode(int paramInt) {
         AudioManager audioManager = mContext.getSystemService(AudioManager.class);
         audioManager.setParameters("hifi_mode=" + (paramInt == 1 ? true : false));
         mDiracSound.setHifiMode(paramInt);
     }
 
-    public void setScenario(int sceneInt) {
+    protected static void setScenario(int sceneInt) {
         mDiracSound.setScenario(sceneInt);
     }
 }

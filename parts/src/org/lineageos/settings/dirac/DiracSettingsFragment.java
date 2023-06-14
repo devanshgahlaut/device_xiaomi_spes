@@ -53,8 +53,11 @@ public class DiracSettingsFragment extends PreferenceFragment implements
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         addPreferencesFromResource(R.xml.dirac_settings);
 
-        DiracUtils.initialize(getActivity());
-        boolean enhancerEnabled = DiracUtils.isDiracEnabled();
+		try {
+            mDiracUtils = DiracUtils.getInstance(getActivity());
+        } catch (Exception e) {
+            Log.d(TAG, "Dirac is not present in system");
+        }
 
 		boolean enhancerEnabled = mDiracUtils != null ? mDiracUtils.isDiracEnabled() : false;																					 
         mSwitchBar = (MainSwitchPreference) findPreference(PREF_ENABLE);
@@ -73,30 +76,27 @@ public class DiracSettingsFragment extends PreferenceFragment implements
 		mScenes = (ListPreference) findPreference(PREF_SCENE);
         mScenes.setOnPreferenceChangeListener(this);
 
-        boolean hifiEnable = DiracUtils.getHifiMode();									
+        boolean hifiEnable = DiracUtils.getHifiMode();
         mHeadsetType.setEnabled(!hifiEnable && enhancerEnabled);
         mPreset.setEnabled(!hifiEnable && enhancerEnabled);
-		mScenes.setEnabled(!hifiEnable && enhancerEnabled);
+	mScenes.setEnabled(!hifiEnable && enhancerEnabled);
     }
 
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
+        if (mDiracUtils == null) return false;
         switch (preference.getKey()) {
             case PREF_HEADSET:
-                DiracUtils.setHeadsetType(Integer.parseInt(newValue.toString()));
+                mDiracUtils.setHeadsetType(Integer.parseInt(newValue.toString()));
                 return true;
             case PREF_HIFI:
-                DiracUtils.setHifiMode((Boolean) newValue ? 1 : 0);
-                if (DiracUtils.isDiracEnabled()) {
-                    mHeadsetType.setEnabled(!(Boolean) newValue);
-                    mPreset.setEnabled(!(Boolean) newValue);
-					mScenes.setEnabled(!(Boolean) newValue);
-                }
+                mDiracUtils.setHifiMode((Boolean) newValue ? 1 : 0);
                 return true;
             case PREF_PRESET:
-                DiracUtils.setLevel((String) newValue);
+                mDiracUtils.setLevel((String) newValue);
+                return true;
             case PREF_SCENE:
-                mDiracUtils.setScenario(Integer.parseInt(newValue.toString()));			
+                mDiracUtils.setScenario(Integer.parseInt(newValue.toString()));
                 return true;
             default:
                 return false;
@@ -107,12 +107,11 @@ public class DiracSettingsFragment extends PreferenceFragment implements
     public void onSwitchChanged(Switch switchView, boolean isChecked) {
         mSwitchBar.setChecked(isChecked);
 
-        DiracUtils.setMusic(isChecked);
-
-        if (!DiracUtils.getHifiMode()) {
-			mHeadsetType.setEnabled(isChecked);
-            mPreset.setEnabled(isChecked);
-			mScenes.setEnabled(isChecked);
-        }
+        if (mDiracUtils == null) return;
+        mDiracUtils.setEnabled(isChecked);
+        mHifi.setEnabled(isChecked);
+        mHeadsetType.setEnabled(isChecked);
+        mPreset.setEnabled(isChecked);
+        mScenes.setEnabled(isChecked);
     }
 }
