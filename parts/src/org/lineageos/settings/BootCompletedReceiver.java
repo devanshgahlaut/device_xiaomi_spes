@@ -20,6 +20,7 @@ package org.lineageos.settings;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.SystemProperties;
 import android.util.Log;
@@ -40,10 +41,16 @@ public class BootCompletedReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(final Context context, Intent intent) {
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
-
-        if (DEBUG) Log.d(TAG, "Received boot completed intent");
-        DiracUtils.initialize(context);
+        if (!intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)) {
+            return;
+        }
+        if (DEBUG)
+            Log.d(TAG, "Received boot completed intent");
+        try {
+            DiracUtils.getInstance(context);
+        } catch (Exception e) {
+            Log.d(TAG, "Dirac is not present in system");
+        }								
         DozeUtils.checkDozeService(context);
         RefreshUtils.startService(context);
         ThermalUtils.startService(context);
